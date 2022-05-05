@@ -5,7 +5,15 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 
 
-class Quiz(models.Model):
+class BaseModel(models.Model):
+    class Meta:
+        abstract = True
+
+    create_datetime = models.DateTimeField(null=True, auto_now_add=True)
+    last_update = models.DateTimeField(null=True, auto_now=True)
+
+
+class Quiz(BaseModel):
     QUESTION_MAX_LIMIT = 20
     QUESTION_MIN_LIMIT = 3
 
@@ -29,20 +37,32 @@ class Quiz(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Result(models.Model):
+class Result(BaseModel):
+    class STATE(models.IntegerChoices):
+        NEW = 0, "New"
+        IN_PROGRESS = 1, "In progress"
+        FINISHED = 2, "Finished"
+
     user = models.ForeignKey(to=get_user_model(), related_name="results", on_delete=models.CASCADE)
     quiz = models.ForeignKey(to="quiz.Quiz", related_name="results", on_delete=models.CASCADE)
+    state = models.PositiveSmallIntegerField(default=STATE.NEW, choices=STATE.choices)
+    uuid = models.UUIDField(default=uuid.uuid4, db_index=True, unique=True)
+    number_of_correct_answers = models.PositiveSmallIntegerField(
+        default=0, validators=[MaxValueValidator(Quiz.QUESTION_MAX_LIMIT)]
+    )
 
 
-class Question(models.Model):
+class Question(BaseModel):
     quiz = models.ForeignKey(to="quiz.Quiz", related_name="questions", on_delete=models.CASCADE)
     order_number = models.PositiveSmallIntegerField(validators=[MaxValueValidator(Quiz.QUESTION_MAX_LIMIT)])
     text = models.CharField(max_length=512)
 
 
-class Choice(models.Model):
+class Choice(BaseModel):
     question = models.ForeignKey(to="quiz.Question", related_name="choices", on_delete=models.CASCADE)
+    is_correct = models.BooleanField(default=False)
+    text = models.CharField(max_length=128)
 
 
 class Category(models.Model):
-    pass
+    name = models.CharField(max_length=512)
