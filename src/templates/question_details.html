@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <div class="row tm-row">
+        <div class="col-12">
+            <hr class="tm-hr-primary tm-mb-55">
+
+            <div class="container mt-5">
+                <div class="d-flex justify-content-center row">
+                    <div class="col-md-10 col-lg-10">
+                        <div class="border">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="question bg-white p-3 border-bottom">
+                                    <div class="d-flex flex-row justify-content-between align-items-center mcq">
+                                        <h4>{{ quiz.title }}</h4>
+                                        <span>Count of questions: {{ quiz.questions_count }}</span>
+                                    </div>
+                                </div>
+                                <div class="question bg-white p-3 border-bottom">
+                                    <div class="d-flex flex-row align-items-center question-title">
+                                        <h3 class="text-danger">Q.</h3>
+                                        <h5 class="mt-1 ml-2">{{ question.text }}</h5>
+                                    </div>
+                                    {% for choice in question.choices.all %}
+                                        <div class="ans ml-2">
+                                            <label class="checkbox"> <input
+                                                    onclick="checkboxReset(this)"
+                                                    type="checkbox"
+                                                    name="checkbox"
+                                                    value="{{ choice.id }}">
+                                                <span>{{ choice.text }}</span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex flex-row justify-content-between align-items-center p-3 bg-white">
+                                    <button class="btn-primary border-success align-items-center btn-success"
+                                            type="submit">Next <i
+                                            class="fa fa-angle-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

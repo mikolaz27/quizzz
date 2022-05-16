@@ -57,12 +57,21 @@ class Question(BaseModel):
     order_number = models.PositiveSmallIntegerField(validators=[MaxValueValidator(Quiz.QUESTION_MAX_LIMIT)])
     text = models.CharField(max_length=512)
 
+    def __str__(self):
+        return f"{self.quiz.title}:{self.text}({self.order_number})"
+
 
 class Choice(BaseModel):
     question = models.ForeignKey(to="quiz.Question", related_name="choices", on_delete=models.CASCADE)
     is_correct = models.BooleanField(default=False)
     text = models.CharField(max_length=128)
 
+    def __str__(self):
+        return f"{self.question.text}:{self.text}({self.is_correct})"
+
 
 class Category(models.Model):
     name = models.CharField(max_length=512)
+
+    def __str__(self):
+        return f"{self.name}"
