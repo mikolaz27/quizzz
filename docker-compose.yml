@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  backend:
+    build: ./
+    #    image: example/quiz
+    container_name: quiz_container
+    working_dir: /quizzz
+    restart: always
+    command:
+      - ./commands/start_server.sh
+    ports:
+      - ${LOCAL_PORT}:${WSGI_PORT}
+    volumes:
+      - ./src:/quizzz/src
+    env_file:
+      - .env
+    #    environment:
+    #      - DEBUG: True
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+#    environment:
+#      POSTGRES_PASSWORD: admin
+#      POSTGRES_USER: admin
+#      POSTGRES_DB: quiz
+
+
+volumes:
+  pg_data: { }
