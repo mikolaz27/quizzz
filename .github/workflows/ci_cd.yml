@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     strategy:
       max-parallel: 4
       matrix:
@@ -34,6 +37,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
+
+#           POSTGRES_DB: github_actions
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
