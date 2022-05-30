@@ -3,7 +3,6 @@ version: "3"
 services:
   backend:
     build: ./
-    #    image: example/quiz
     container_name: quiz_container
     working_dir: /quizzz
     restart: always
@@ -15,8 +14,6 @@ services:
       - ./src:/quizzz/src
     env_file:
       - .env
-    #    environment:
-    #      - DEBUG: True
     depends_on:
       - postgres
 
@@ -28,11 +25,20 @@ services:
       - pg_data:/var/lib/postgresql/data
     env_file:
       - .env
-#    environment:
-#      POSTGRES_PASSWORD: admin
-#      POSTGRES_USER: admin
-#      POSTGRES_DB: quiz
 
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5000:80"
+    volumes:
+      - pgadmin_data:"/var/lib/pgadmin
+    depends_on:
+      - postgres
 
 volumes:
   pg_data: { }
+  pgadmin_data: { }
