@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo "hello from docker"
-python src/manage.py migrate
-python src/manage.py runserver 0:8010
+python src/manage.py migrate --settings=config.settings.${MODE}
+python src/manage.py collectstatic --noinput --settings=config.settings.${MODE}
+python src/manage.py runserver --settings=config.settings.${MODE} 0:${WSGI_PORT}

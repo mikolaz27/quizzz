@@ -12,6 +12,8 @@ services:
       - ${LOCAL_PORT}:${WSGI_PORT}
     volumes:
       - ./src:/quizzz/src
+      - static_content:/quizzz/src/static
+      - media_content:/quizzz/src/media
     env_file:
       - .env
     depends_on:
@@ -35,10 +37,52 @@ services:
     ports:
       - "5000:80"
     volumes:
-      - pgadmin_data:"/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+
+  mongodb:
+    image: mongo:3-stretch
+    ports:
+      - 27017:27017
+    container_name: mongo_db_container
+    command: [ "--bind_ip_all", "--smallfiles" ]
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+    env_file:
+      - .env
+
+  mongoadmin:
+    image: mongo-express
+    restart: always
+    container_name: mongo_admin_container
+    ports:
+      - 8091:8081
+    env_file:
+      - .env
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+
+  nginx:
+    image: nginx:1.19
+    volumes:
+      - static_content:/quizzz/src/static
+      - media_content:/quizzz/src/media
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
+      - 443:443
+    env_file:
+      - .env
+    depends_on:
+      - backend
 
 volumes:
   pg_data: { }
   pgadmin_data: { }
+  mongo_data: { }
+  static_content: { }
+  media_content: { }

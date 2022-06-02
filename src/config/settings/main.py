@@ -6,6 +6,12 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
 CURRENT_ENV = "MAIN"
 print(CURRENT_ENV)
 
