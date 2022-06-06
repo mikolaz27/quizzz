@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os.path
 from datetime import timedelta
 from pathlib import Path
+
 import mongoengine
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,9 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-mongoengine.connect(
-    host="mongodb://admin:admin@mongodb:27017/mongodb_content?authSource=admin"
-)
+mongoengine.connect(host="mongodb://admin:admin@mongodb:27017/mongodb_content?authSource=admin")
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +46,7 @@ INSTALLED_APPS = [
     "accounts",
     "quiz",
     "api",
-    "mongo_blog"
+    "mongo_blog",
 ]
 
 MIDDLEWARE = [
@@ -132,10 +131,8 @@ CURRENT_ENV = "BASE"
 # REST settings
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",),
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
 SIMPLE_JWT = {

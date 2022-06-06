@@ -7,7 +7,7 @@ services:
     working_dir: /quizzz
     restart: always
     command:
-      - ./commands/start_server.sh
+      - ./commands/start_server_${MODE}.sh
     ports:
       - ${LOCAL_PORT}:${WSGI_PORT}
     volumes:

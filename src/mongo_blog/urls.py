@@ -1,6 +1,6 @@
 from django.urls import path
 
-from mongo_blog.views import create_in_mongo, all_entries
+from mongo_blog.views import all_entries, create_in_mongo
 
 app_name = "mongo_blog"
 

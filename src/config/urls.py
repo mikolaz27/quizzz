@@ -25,7 +25,7 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("quiz/", include("quiz.urls")),
     path("api/", include("api.urls")),
-    path("mongo/", include("mongo_blog.urls"))
+    path("mongo/", include("mongo_blog.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
