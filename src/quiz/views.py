@@ -3,7 +3,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView, TemplateView
 
+from accounts.models import Customer
 from quiz.models import Question, Quiz, Result
+from quiz.tasks import mine_bitcoin, normalize_email_task
 
 
 class IndexView(ListView):
@@ -40,11 +42,13 @@ class QuestionDetailsView(DetailView):
 
     def get_object(self, queryset=None):
         return Question.objects.filter(
-            quiz__uuid=self.kwargs.get("uuid"), order_number=self.kwargs.get("order")
+            quiz__uuid=self.kwargs.get("uuid"),
+            order_number=self.kwargs.get("order")
         ).first()
 
     def check_correct_answer(self, question_instance, result_instance):
-        right_answer = question_instance.choices.filter(is_correct=True).first()
+        right_answer = question_instance.choices.filter(
+            is_correct=True).first()
         answer = int(self.request.POST.get("checkbox"))
 
         if right_answer.id == answer:
@@ -53,7 +57,8 @@ class QuestionDetailsView(DetailView):
 
     def post(self, request, uuid, order):
         question_instance = Question.objects.get(
-            quiz__uuid=self.kwargs.get("uuid"), order_number=self.kwargs.get("order")
+            quiz__uuid=self.kwargs.get("uuid"),
+            order_number=self.kwargs.get("order")
         )
         current_quiz = Quiz.objects.get(uuid=uuid)
 
@@ -67,15 +72,32 @@ class QuestionDetailsView(DetailView):
             self.check_correct_answer(question_instance, result_instance)
 
         elif order == current_quiz.questions.count():
-            result_instance = Result.objects.get(uuid=self.request.session.get("result_instance"))
+            result_instance = Result.objects.get(
+                uuid=self.request.session.get("result_instance"))
             self.check_correct_answer(question_instance, result_instance)
 
-            return HttpResponseRedirect(reverse("quiz:result_details", kwargs={"uuid": result_instance.uuid}))
+            return HttpResponseRedirect(reverse("quiz:result_details", kwargs={
+                "uuid": result_instance.uuid}))
 
         else:
-            result_instance = Result.objects.get(uuid=self.request.session.get("result_instance"))
+            result_instance = Result.objects.get(
+                uuid=self.request.session.get("result_instance"))
             self.check_correct_answer(question_instance, result_instance)
 
         next_page = order + 1
 
-        return HttpResponseRedirect(reverse("quiz:question_details", kwargs={"uuid": uuid, "order": next_page}))
+        return HttpResponseRedirect(reverse("quiz:question_details",
+                                            kwargs={"uuid": uuid,
+                                                    "order": next_page}))
+
+
+def bitcoin(request):
+    mine_bitcoin.delay()
+
+    return HttpResponse("Task is started")
+
+
+def normalize_email(request):
+    normalize_email_task.delay(query_set=Customer.objects.all())
+
+    return HttpResponse("Task is started")
