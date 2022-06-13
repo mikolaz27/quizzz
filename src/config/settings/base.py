@@ -13,6 +13,8 @@ import os.path
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
+
 import mongoengine
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "drf_yasg",
     "django_extensions",
+    "django_celery_beat",
     "rest_framework",
     "accounts",
     "quiz",
@@ -133,7 +136,7 @@ CURRENT_ENV = "BASE"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-    "rest_framework_simplejwt.authentication.JWTAuthentication",),
+        "rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated"],
 }
@@ -155,7 +158,13 @@ DJOSER = {
 CELERY_BROKER_URL = "redis://redis"
 CELERY_RESULT_BACKEND = "redis://redis"
 
-# CELERY_RESULT_BACKEND = f"redis://redis:6379"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
+
+CELERY_BEAT_SCHEDULE = {
+    "some_periodic_task": {
+        "task": "quiz.tasks.mine_bitcoin",
+        "schedule": crontab(minute="*/2"),
+    }
+}

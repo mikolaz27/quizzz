@@ -108,6 +108,42 @@ services:
       - redis
       - backend
 
+  celerybeat:
+    env_file: .env
+    build: .
+    container_name: celerybeat
+    command: ./commands/start_celerybeat.sh
+    restart: on-failure
+    volumes:
+      - ./src:/quizzz
+      - ./commands:/quizzz/commands
+    depends_on:
+      - redis
+      - celery
+
+  flower:
+    build: ./
+    volumes:
+      - ./src:/quizzz
+    env_file:
+      - .env
+    command: celery -A config flower --broker=redis://redis
+    ports:
+      - 5555:5555
+    depends_on:
+      - celery
+      - redis
+
+  redisadmin:
+    container_name: redisadmin
+    image: rediscommander/redis-commander:latest
+    hostname: redisadmin
+    restart: always
+    ports:
+      - "8092:8081"
+    env_file:
+      - .env
+
 volumes:
   pg_data: { }
   pgadmin_data: { }

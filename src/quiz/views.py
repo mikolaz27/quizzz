@@ -98,6 +98,5 @@ def bitcoin(request):
 
 
 def normalize_email(request):
-    normalize_email_task.delay(query_set=Customer.objects.all())
-
+    normalize_email_task.delay(filter=dict(email__endswith=".com"))
     return HttpResponse("Task is started")
