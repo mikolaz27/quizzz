@@ -1,0 +1,15 @@
+{% extends 'quiz_details.html' %}
+
+{% block subcontent %}
+    <div class="mb-4">
+        <h2 class="pt-2 tm-color-primary tm-post-title">{{ result.quiz.title }}</h2>
+         <h2 class="pt-2 tm-color-primary tm-post-title">
+                        You passed quiz
+                        with {{ result.number_of_correct_answers }} result</h2>
+        <p class="tm-mb-40">June 16, 2020 posted by Admin Nat</p>
+        <p>
+            {{ result.quiz.description }}
+        </p>
+        <span class="d-block text-right tm-color-primary">Creative . Design . Business</span>
+    </div>
+{% endblock subcontent %}
